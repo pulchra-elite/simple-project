@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Bingo</title>
+    <script src="https://unpkg.com/react@16/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6.15.0/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.js"></script>
+    <script src='https://code.responsivevoice.org/responsivevoice.js'></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+
+    class App extends React.Component {
+      constructor(props) {
+        super(props)
+
+        let bingo = {
+          B: _.range(1, 16),
+          I: _.range(16, 31),
+          N: _.range(31, 46),
+          G: _.range(46, 61),
+          O: _.range(61, 76)
+        }
+
+        let stuff = []
+        _.each(bingo, (nums, letter) => {
+          stuff = [...stuff, ...nums.map(num => ({
+            letter: letter, 
+            num: num,
+            toString: () => {
+              return "" + letter + "" + num
+            }
+          }))]
+        })
+
+        this.state = {
+          all: stuff,
+          unrolled: [...stuff],
+          rolled: [],
+          previousRoll: {toString: () => 'wala pa'},
+          currentRoll: {toString: () => 'Leggo.'},
+          autoRoll: false,
+          rollInterval: undefined,
+        }
+      }
+
+      renderNumbersByLetter(letter) {
+        let nums = this.state.all.filter(num => num.letter === letter.toUpperCase())
+
+        return nums.map(num => {
+          let alreadyRolled = this.state.rolled.find(rolled => rolled.num === num.num)
+
+          return <td key={num.toString()} style={{padding: '25px', textAlign: 'center', fontSize: '20px'}} className={alreadyRolled ? 'table-success': ''}>
+            <strong>{num.toString()}</strong>
+          </td>
+        })
+      }
+
+      rollNew() {
+        let roll = _.sample(this.state.unrolled)
+
+        _.remove(this.state.unrolled, roll)
+
+        this.setState({
+          rolled: [...this.state.rolled, roll],
+          currentRoll: roll,
+          previousRoll: this.state.currentRoll,
+        })
+
+        responsiveVoice.speak(`${roll.letter} ${roll.num}`)
+      }
+
+      autoRoll() {
+        let interval = setInterval(this.rollNew.bind(this), 5000)
+        this.setState({autoRoll: true, rollInterval: interval})
+      }
+
+      stopAuto() { 
+        clearInterval(this.state.rollInterval);
+        this.setState({autoRoll: false})
+      }
+
+      render() {
+        console.log(this.state)
+        return <div className="container-fluid">
+          <h1 style={{textAlign: 'center'}}>Bingo!</h1>
+          <div className="row">
+            <div className="col-md-12">
+              <h1 className="text-center" style={{fontSize: '150px'}}>{this.state.currentRoll.toString()}</h1>
+              <h2 className="text-center">Previous: {this.state.previousRoll.toString()}</h2>
+
+              <p className="text-center">
+                <button className="btn btn-primary" onClick={this.rollNew.bind(this)}>Roll</button>
+                &nbsp;
+                <button className="btn btn-primary" onClick={this.autoRoll.bind(this)}>
+                { this.state.autoRoll ? 'Rolling' : 'Auto' }
+                </button>
+                &nbsp;
+                { this.state.autoRoll 
+                  ? <button className="btn btn-primary" onClick={this.stopAuto.bind(this)}>Stop</button>
+                  : ''
+                }
+              </p>
+            </div>
+          </div>
+          <div className="row">
+            <table className="table table-bordered">
+              <tbody>
+                <tr>
+                  <td>B</td>
+                  {this.renderNumbersByLetter('b')}
+                </tr>
+                <tr>
+                  <td>I</td>
+                  {this.renderNumbersByLetter('i')}
+                </tr>
+                <tr>
+                  <td>N</td>
+                  {this.renderNumbersByLetter('n')}
+                </tr>
+                <tr>
+                  <td>G</td>
+                  {this.renderNumbersByLetter('g')}
+                </tr>
+                <tr>
+                  <td>O</td>
+                  {this.renderNumbersByLetter('o')}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+    }
+
+      ReactDOM.render(
+        <App/>,
+        document.getElementById('root')
+      );
+
+    </script>
+    <!--
+      Note: this page is a great way to try React but it's not suitable for production.
+      It slowly compiles JSX with Babel in the browser and uses a large development build of React.
+
+      To set up a production-ready React build environment, follow these instructions:
+      * https://reactjs.org/docs/add-react-to-a-new-app.html
+      * https://reactjs.org/docs/add-react-to-an-existing-app.html
+
+      You can also use React without JSX, in which case you can remove Babel:
+      * https://reactjs.org/docs/react-without-jsx.html
+      * https://reactjs.org/docs/cdn-links.html
+    -->
+  </body>
+</html>
