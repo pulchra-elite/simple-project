@@ -42,7 +42,7 @@
           all: stuff,
           unrolled: [...stuff],
           rolled: [],
-          previousRoll: {toString: () => 'wala pa'},
+          previousRoll: {toString: () => 'Wala pa.'},
           currentRoll: {toString: () => 'Leggo.'},
           autoRoll: false,
           rollInterval: undefined,
@@ -111,23 +111,18 @@
             <table className="table table-bordered">
               <tbody>
                 <tr>
-                  <td>B</td>
                   {this.renderNumbersByLetter('b')}
                 </tr>
                 <tr>
-                  <td>I</td>
                   {this.renderNumbersByLetter('i')}
                 </tr>
                 <tr>
-                  <td>N</td>
                   {this.renderNumbersByLetter('n')}
                 </tr>
                 <tr>
-                  <td>G</td>
                   {this.renderNumbersByLetter('g')}
                 </tr>
                 <tr>
-                  <td>O</td>
                   {this.renderNumbersByLetter('o')}
                 </tr>
               </tbody>
