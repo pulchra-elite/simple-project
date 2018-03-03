@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <script src="https://cdn.rawgit.com/konvajs/konva/1.7.6/konva.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/corgicss/css/corgi.css" type="text/css" media="screen" title="no title" charset="utf-8">
+
+    <style type="text/css" media="screen">
+      body { background: #eee }
+
+      .container {
+        width: 500px;
+        margin: 0 auto;
+      }
+
+      #konva {
+        background: white;
+        width: 500px;
+        border: 2px dashed #aaa;
+        margin: 0 auto;
+      }
+
+      .konvajs-content canvas{
+        border: 2px dashed #eee;
+      }
+    </style>
+    <title>Otolik</title>
+  </head>
+  <body>
+    <div class="container">
+      <div id="konva"></div>
+      <input type="file" id="upload" value="Upload"/>
+      <br/>
+      <br/>
+      <p>
+        <button class="button -primary" id="smaller">-</button>
+        <button class="button -primary" id="larger">+</button>
+        <strong>Resize Uploaded Image</strong>
+      <p>* Use arrow keys to move image inside canvas</p>
+    </div>
+  </body>
+
+  <script charset="utf-8">
+    var stage = new Konva.Stage({
+      container: 'konva',   // id of container <div>
+      width: 500,
+      height: 500,
+      fill: 'white',
+    });
+
+    var larger = document.querySelector("#larger")
+    larger.onclick = handler('larger')
+
+    var smaller = document.querySelector("#smaller")
+    smaller.onclick = handler('smaller')
+
+    function handler(action) {
+      var scale = action === 'larger' ? 1.05 : 0.95;
+      return function(e) {
+        pic.width(pic.width() * scale)
+        pic.height(pic.height() * scale)
+        pic.draw()
+        stage.draw()
+      }
+    }
+ 
+    document.onkeyup = function(e) {
+      var moveAmt = 5
+      switch (e.key) {
+        case 'ArrowUp':
+          pic.y(pic.y() - moveAmt)
+          break
+        case 'ArrowDown':
+          pic.y(pic.y() + moveAmt)
+          break
+        case 'ArrowLeft':
+          pic.x(pic.x() - moveAmt)
+          console.log('left')
+          break
+        case 'ArrowRight':
+          pic.x(pic.x() + moveAmt)
+          console.log('right')
+        default:
+          break
+      }
+
+      pic.draw()
+      stage.draw()
+    }
+
+    var uploader = document.querySelector("#upload")
+    uploader.onchange = function(e) {
+      var file = e.target.files[0]
+
+      if (file.type.match('image.*')) {
+        var reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onload = function(evt){
+          console.log(evt.target)
+          if (evt.target.readyState === FileReader.DONE) {
+            console.log(evt.target.result)
+            imageObj.src = evt.target.result
+          }
+        }
+      }
+    }
+
+    function drawImage(domImg, canvasImg, layer = new Konva.Layer()) {
+      canvasImg.setAttrs({
+        image: domImg,
+        x: 0,
+        y: 0,
+        width: domImg.width,
+        height: domImg.height,
+        draggable: false
+      })
+
+      layer.add(canvasImg)
+      stage.add(layer)
+    }
+
+    var back = new Konva.Layer()
+    var pic = new Konva.Image()
+    var imageObj = new Image();
+    imageObj.onload = function () { 
+      drawImage(this, pic, back) 
+      back.moveToBottom()
+      back.redraw()
+    }
+
+    var cloud = new Konva.Image()
+    var cloudImg = new Image()
+    cloudImg.onload = function() { drawImage(this, cloud) }
+    cloudImg.src = "https://i.imgur.com/Ku7Sw8M.png"
+  </script>
+</html>
