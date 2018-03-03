@@ -23,6 +23,8 @@ url: "https://kendaganio.com/onepage" # the base hostname & protocol for your si
 twitter_username: kendaganio
 github_username:  kendaganio
 
+google_analytics: UA-114305079-3
+
 # Build settings
 markdown: kramdown
 plugins:
