@@ -11,7 +11,7 @@
       body { background: #eee }
 
       .container {
-        width: 500px;
+        width: 530px;
         margin: 0 auto;
       }
 
@@ -25,6 +25,10 @@
       .konvajs-content canvas{
         border: 2px dashed #eee;
       }
+
+      #download { 
+        float: right
+      }
     </style>
     <title>Otolik</title>
   </head>
@@ -37,8 +41,19 @@
       <p>
         <button class="button -primary" id="smaller">-</button>
         <button class="button -primary" id="larger">+</button>
-        <strong>Resize Uploaded Image</strong>
-      <p>* Use arrow keys to move image inside canvas</p>
+        <em>Resize Image</em>
+        <button class="button -primary" id="download">Download</button>
+      <p>
+        * Choose file to upload
+        <br/>
+        * Resize image using the +/- buttons
+        <br/>
+        * Use arrow keys to move image inside canvas
+        <br/>
+        * Download when ready!
+        <br/>
+        * Only tested to work on Chrome 64, don't @ me.
+      </p>
     </div>
   </body>
 
@@ -77,11 +92,9 @@
           break
         case 'ArrowLeft':
           pic.x(pic.x() - moveAmt)
-          console.log('left')
           break
         case 'ArrowRight':
           pic.x(pic.x() + moveAmt)
-          console.log('right')
         default:
           break
       }
@@ -132,7 +145,24 @@
 
     var cloud = new Konva.Image()
     var cloudImg = new Image()
+    cloudImg.crossOrigin = ""
     cloudImg.onload = function() { drawImage(this, cloud) }
     cloudImg.src = "https://i.imgur.com/Ku7Sw8M.png"
+
+    function downloadURI(uri, name) {
+      var link = document.createElement("a");
+      link.download = name;
+      link.href = uri;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      delete link;
+    }
+
+    var download = document.querySelector("#download")
+    download.onclick = function(e) {
+      var data = stage.toDataURL()
+      downloadURI(data, 'otolik.png')
+    }
   </script>
 </html>
