@@ -29,6 +29,7 @@
 
 
     <script src="https://cdn.rawgit.com/konvajs/konva/1.7.6/konva.min.js"></script>
+    <script src="http://danml.com/js/download2.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-114305079-3"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -154,7 +155,7 @@
     imageObj.onload = function () { 
       drawImage(this, pic, back) 
       back.moveToBottom()
-      back.redraw()
+      back.draw()
     }
 
     var cloud = new Konva.Image()
@@ -173,10 +174,10 @@
       delete link;
     }
 
-    var download = document.querySelector("#download")
-    download.onclick = function(e) {
+    var downloadButton = document.querySelector("#download")
+    downloadButton.onclick = function(e) {
       var data = stage.toDataURL()
-      downloadURI(data, 'otolik.png')
+      download(data, 'otolik.png', 'image/png')
     }
   </script>
 </html>
