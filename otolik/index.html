@@ -131,12 +131,16 @@
     }
 
     function drawImage(domImg, canvasImg, layer = new Konva.Layer()) {
+
+      var w = 500;
+      var h = domImg.height * (500 / domImg.width)
+
       canvasImg.setAttrs({
         image: domImg,
         x: 0,
         y: 0,
-        width: domImg.width,
-        height: domImg.height,
+        width: w,
+        height: h,
         draggable: false
       })
 
