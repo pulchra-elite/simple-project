@@ -1,0 +1,16 @@
+- name: Bingo
+  permalink: bingo
+  description: A roller so you don't need to shake the damn bottle.
+  tags:
+    - React
+    - Lodash
+    - Milligram
+    - ResponsiveVoice
+
+- name: Otolik
+  permalink: otolik
+  description: Autotelic Papunta/Pabalik album art image generator.
+  tags:
+    - Konva
+    - Canvas
+    - HTML 5
