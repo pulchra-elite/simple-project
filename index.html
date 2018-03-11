@@ -2,27 +2,17 @@
 layout: home
 ---
 
-<p class="app-item">
-  <a href="{{ "bingo" | relative_url }}">
-    Bingo
+{% for app in site.data.apps %}
+  <p class="app-item">
+  <a href="{{ app.permalink | relative_url }}">
+    {{ app.name }} 
   </a>
 
-  &mdash; A roller so you don't need to shake the damn bottle. 
-  <br/>
-  <span class="tag">React</span>
-  <span class="tag">Lodash</span>
-  <span class="tag">Milligram</span>
-  <span class="tag">ResponsiveVoice</span>
-</p>
+  &mdash; {{ app.description }}
 
-<p class="app-item">
-  <a href="{{ "otolik" | relative_url }}">
-    Otolik
-  </a>
-
-  &mdash; Autotelic Papunta/Pabalik album art image generator
   <br/>
-  <span class="tag">Konva</span>
-  <span class="tag">Canvas</span>
-  <span class="tag">HTML 5</span>
-</p>
+  {% for tag in app.tags %}
+    <span class="tag">{{ tag }}</span>
+  {% endfor %}
+  </p>
+{% endfor %}
