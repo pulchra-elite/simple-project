@@ -7,7 +7,20 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.15/dist/vue.js"></script>
     <title>Minesweeper</title>
     <style type="text/css" media="screen">
-      
+      #minesweeper table td {
+        padding: 0
+      }
+
+      #minesweeper button.box {
+        width: 40px;
+        height: 40px;
+        border-radius: 0;
+        outline: 0;
+      }
+
+      #minesweeper button.box:hover {
+        background: #eee
+      }
     </style>
   </head>
   <body>
@@ -15,7 +28,10 @@
       <table class="table -bordered">
         <tr v-for="rows in boxes">
           <td v-for="box in rows">
-            <button @click="open(box)">x</button>
+            <button class="box" @click="open(box)">
+              <span v-if="!box.opened">&nbsp;</span>
+              <span v-if="box.opened">x</span>
+            </button>
           </td>
         </tr>
       </table>
@@ -42,6 +58,7 @@
         methods: {
           open: function (box) {
             console.log('x', box.coordinates.x, 'y', box.coordinates.y)
+            box.opened = true
           }
         },
 
