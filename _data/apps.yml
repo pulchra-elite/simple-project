@@ -14,3 +14,9 @@
     - Konva
     - Canvas
     - HTML 5
+
+- name: Minesweeper
+  permalink: minesweeper
+  description: You know the game, but done in Vue.js
+  tags:
+    - Vue

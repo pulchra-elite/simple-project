@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="https://unpkg.com/corgicss/css/corgi.css" type="text/css" media="screen" title="no title" charset="utf-8">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.15/dist/vue.js"></script>
+    <title>Minesweeper</title>
+    <style type="text/css" media="screen">
+      
+    </style>
+  </head>
+  <body>
+    <div id="minesweeper" class="container">
+      <table class="table -bordered">
+        <tr v-for="rows in boxes">
+          <td v-for="box in rows">
+            <button @click="open(box)">x</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <script charset="utf-8">
+      function Coordinates(x, y) {
+        this.x = x;
+        this.y = y;
+      }
+
+      function Box(options) {
+        this.opened = false
+        this.coordinates = options.coordinates
+      }
+
+      var app = new Vue({
+        el: '#minesweeper',
+        data: {
+          message: 'hello',
+          boxes: []
+        },
+
+        methods: {
+          open: function (box) {
+            console.log('x', box.coordinates.x, 'y', box.coordinates.y)
+          }
+        },
+
+        mounted() {
+          for (var i = 0; i < 10; i++) {
+            var row = []
+            for (var j = 0; j < 10; j++) {
+              var box = new Box({ 
+                coordinates: new Coordinates(i, j)
+              })
+              row.push(box)
+            }
+            this.boxes.push(row)
+          }
+        }
+      })
+    </script>
+  </body>
+</html>
