@@ -31,6 +31,7 @@
             <button class="box" @click="open(box)">
               <span v-if="!box.opened">&nbsp;</span>
               <span v-if="box.opened">x</span>
+              <span v-if="box.bomb">b</span>
             </button>
           </td>
         </tr>
@@ -38,6 +39,10 @@
     </div>
 
     <script charset="utf-8">
+      function getRandomInt(max) {
+        return Math.floor(Math.random() * Math.floor(max));
+      }
+
       function Coordinates(x, y) {
         this.x = x;
         this.y = y;
@@ -46,28 +51,43 @@
       function Box(options) {
         this.opened = false
         this.coordinates = options.coordinates
+        this.bomb = options.bomb
       }
 
       var app = new Vue({
         el: '#minesweeper',
         data: {
           message: 'hello',
-          boxes: []
+          boxes: [],
+          rows: 10,
+          cols: 10,
+          bombs: {}
         },
 
         methods: {
           open: function (box) {
             console.log('x', box.coordinates.x, 'y', box.coordinates.y)
             box.opened = true
-          }
+          },
         },
 
         mounted() {
-          for (var i = 0; i < 10; i++) {
+          for (var b = 0; b < 10; b++) {
+            var key = "" + getRandomInt(10) + "/" + getRandomInt(10)
+            this.bombs[key] = true
+          }
+
+          for (var i = 0; i < this.cols; i++) {
             var row = []
-            for (var j = 0; j < 10; j++) {
+            for (var j = 0; j < this.rows; j++) {
+              var isBomb = false;
+              var key = "" + parseInt(i) + "/" + parseInt(j)
+              if (this.bombs[key]) {
+                isBomb = true
+              }
               var box = new Box({ 
-                coordinates: new Coordinates(i, j)
+                coordinates: new Coordinates(i, j),
+                bomb: isBomb,
               })
               row.push(box)
             }
