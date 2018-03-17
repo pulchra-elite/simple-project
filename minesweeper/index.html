@@ -67,56 +67,98 @@
           boxes: [],
           rows: 10,
           cols: 10,
-          bombs: {}
+          bombs: {},
+          numBombs: 10,
         },
 
         methods: {
           open: function (box) {
-            box.opened = true
             if (box.bomb) {
               alert('bogsa')
             }
+            this.openNeighbors(box)
           },
-          countNeighbors: function (box) { 
-            var neighbors = 0;
+
+          openNeighbors: function (box) {
+            if (!box.bomb && !box.opened) {
+              box.opened = true
+            } else {
+              return
+            }
+
+            if (box.neighbors === 0) {
+              var neighbors = this.getNeighbors(box)
+              neighbors.map(this.openNeighbors)
+            }
+          },
+
+          getNeighbors: function (box) { 
+            var neighbors = []
+
             for (var i = box.coordinates.x - 1; i <= box.coordinates.x + 1; i++) {
               for (var j = box.coordinates.y - 1; j <= box.coordinates.y + 1; j++) {
-                if (i >= 0 && j >= 0 && i <= this.rows && j <= this.rows) {
-                  var key = "" + parseInt(i) + "/" + parseInt(j)
-                  neighbors += this.bombs[key] ? 1 : 0
+
+                if (box.coordinates.x === i && box.coordinates.y === j) {
+                  continue
                 }
+
+                if (i >= 0 && j >= 0 
+                    && i < this.rows && j < this.rows) {
+                  neighbors.push(this.boxes[i][j])
+                }
+
               }
             }
+
+            // function gago(box) { return "x=" + box.coordinates.x + ", y=" + box.coordinates.y }
+            // console.log('box x=', box.coordinates.x, ' y=', box.coordinates.y, neighbors.map(gago))
+
             return neighbors
+          },
+
+          countNeighbors: function (box) { 
+            var bomba = 0;
+            var neighbors = this.getNeighbors(box)
+           
+            for (var i = 0; i < neighbors.length; i++) {
+              var coords = neighbors[i].coordinates
+              var key = "" + parseInt(coords.x) + "/" + parseInt(coords.y)
+              bomba += this.bombs[key] ? 1 : 0
+            }
+
+            return bomba
           },
         },
 
         mounted() {
-          for (var b = 0; b < 10; b++) {
-            var key = "" + getRandomInt(10) + "/" + getRandomInt(10)
+          for (var b = 0; b < this.numBombs; b++) {
+            var key = "" + getRandomInt(this.rows) + "/" + getRandomInt(this.cols)
             this.bombs[key] = true
           }
 
           for (var i = 0; i < this.cols; i++) {
             var row = []
-            for (var j = 0; j < this.rows; j++) {
-              var isBomb = false;
-              var key = "" + parseInt(i) + "/" + parseInt(j)
 
-              if (this.bombs[key]) {
-                isBomb = true
-              }
+            for (var j = 0; j < this.rows; j++) {
+              var key = "" + parseInt(i) + "/" + parseInt(j)
               var coordinates =  new Coordinates(i, j)
 
               var box = new Box({ 
                 coordinates: coordinates,
-                bomb: isBomb,
+                bomb: this.bombs[key]
               })
 
-              box.neighbors = this.countNeighbors(box)
               row.push(box)
             }
             this.boxes.push(row)
+          }
+
+
+          for (var i = 0; i < this.cols; i++) {
+            for (var j = 0; j < this.rows; j++) {
+              var box = this.boxes[i][j]
+              this.boxes[i][j].neighbors = this.countNeighbors(box)
+            }
           }
         }
       })
