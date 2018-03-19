@@ -7,9 +7,9 @@
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.15/dist/vue.js"></script>
     <title>Minesweeper</title>
     <style type="text/css" media="screen">
-      #minesweeper table td {
-        padding: 0
-      }
+      #minesweeper table { text-align: center }
+
+      #minesweeper table td { padding: 0 }
 
       #minesweeper button.box {
         width: 40px;
@@ -19,23 +19,77 @@
         font-size: 1.3rem
       }
 
-      #minesweeper button.box:hover {
-        background: #eee
+      #minesweeper button.box:hover { background: #eee }
+
+      .counter {
+        display: inline-block;
+        background: #34ace0;
+        width: 100px;
+        font-size: 90%;
+      }
+
+      .counter .value {
+        font-weight: bold;
+        font-size: 2rem;
+        text-align: center;
+        color: white;
+      }
+
+      .counter .value .title{
+        font-size: 0.8rem;
+        font-weight: normal;
+        display: block;
+        color: #eee;
+      }
+
+      .counter .button {
+        width: 100%;
+        padding: 0;
+        border-radius: 0;
+      }
+
+      .unopened {
+        background: #b2bec3;
       }
     </style>
   </head>
   <body>
     <div id="minesweeper" class="container">
+      <form class="form" @submit="updateGrid"> 
+        <fieldset>
+          <div class="counter">
+            <button class="button -primary" @click="rows +=1">+</button>
+            <div class="value">
+              <span class="title">Rows</span>
+              {{ rows }}
+            </div>
+            <button class="button -primary" @click="rows -=1">-</button>
+          </div>
+          <div class="counter">
+            <button class="button -primary" @click="cols +=1">+</button>
+            <div class="value">
+              <span class="title">Columns</span>
+              {{ cols }}
+            </div>
+            <button class="button -primary" @click="cols -=1">-</button>
+          </div>
+          <div class="counter">
+            <button class="button -primary" @click="numBombs +=1">+</button>
+            <div class="value">
+              <span class="title">Bombs</span>
+              {{ numBombs }}
+            </div>
+            <button class="button -primary" @click="numBombs -=1">-</button>
+          </div>
+        </fieldset>
+      </form>
       <table class="table -bordered">
         <tr v-for="rows in boxes">
           <td v-for="box in rows">
-            <button class="box" @click="open(box)">
+            <button class="box" @click="open(box)" :class="{unopened: !box.opened}">
               <span v-if="box.opened">
                 <span v-if="box.bomb">💣</span>
                 <span v-if="box.neighbors > 0 && !box.bomb">{{ box.neighbors }}</span>
-              </span>
-              <span v-else>
-                x
               </span>
             </button>
           </td>
@@ -65,13 +119,21 @@
         data: {
           message: 'hello',
           boxes: [],
+          bombs: {},
           rows: 10,
           cols: 10,
-          bombs: {},
           numBombs: 10,
         },
 
         methods: {
+          updateGrid: function (e) {
+            e.preventDefault()
+            console.log(this.rows, this.cols, this.numBombs)
+            this.bombs = {}
+            this.boxes = []
+            this.generateGrid()
+          },
+
           open: function (box) {
             if (box.bomb) {
               alert('bogsa')
@@ -97,22 +159,14 @@
 
             for (var i = box.coordinates.x - 1; i <= box.coordinates.x + 1; i++) {
               for (var j = box.coordinates.y - 1; j <= box.coordinates.y + 1; j++) {
-
-                if (box.coordinates.x === i && box.coordinates.y === j) {
-                  continue
-                }
+                if (box.coordinates.x === i && box.coordinates.y === j) { continue }
 
                 if (i >= 0 && j >= 0 
                     && i < this.rows && j < this.rows) {
                   neighbors.push(this.boxes[i][j])
                 }
-
               }
             }
-
-            // function gago(box) { return "x=" + box.coordinates.x + ", y=" + box.coordinates.y }
-            // console.log('box x=', box.coordinates.x, ' y=', box.coordinates.y, neighbors.map(gago))
-
             return neighbors
           },
 
@@ -128,39 +182,44 @@
 
             return bomba
           },
+
+          generateGrid: function() {
+            for (var b = 0; b < this.numBombs; b++) {
+              var key = "" + getRandomInt(this.rows) + "/" + getRandomInt(this.cols)
+              this.bombs[key] = true
+            }
+
+            for (var i = 0; i < this.cols; i++) {
+              var row = []
+
+              for (var j = 0; j < this.rows; j++) {
+                var key = "" + parseInt(i) + "/" + parseInt(j)
+                var coordinates =  new Coordinates(i, j)
+
+                var box = new Box({ 
+                  coordinates: coordinates,
+                  bomb: this.bombs[key]
+                })
+
+                row.push(box)
+              }
+              this.boxes.push(row)
+            }
+
+
+            for (var i = 0; i < this.cols; i++) {
+              for (var j = 0; j < this.rows; j++) {
+                var box = this.boxes[i][j]
+                this.boxes[i][j].neighbors = this.countNeighbors(box)
+              }
+            }
+          },
         },
 
         mounted() {
-          for (var b = 0; b < this.numBombs; b++) {
-            var key = "" + getRandomInt(this.rows) + "/" + getRandomInt(this.cols)
-            this.bombs[key] = true
-          }
-
-          for (var i = 0; i < this.cols; i++) {
-            var row = []
-
-            for (var j = 0; j < this.rows; j++) {
-              var key = "" + parseInt(i) + "/" + parseInt(j)
-              var coordinates =  new Coordinates(i, j)
-
-              var box = new Box({ 
-                coordinates: coordinates,
-                bomb: this.bombs[key]
-              })
-
-              row.push(box)
-            }
-            this.boxes.push(row)
-          }
-
-
-          for (var i = 0; i < this.cols; i++) {
-            for (var j = 0; j < this.rows; j++) {
-              var box = this.boxes[i][j]
-              this.boxes[i][j].neighbors = this.countNeighbors(box)
-            }
-          }
+          this.generateGrid();
         }
+
       })
     </script>
   </body>
