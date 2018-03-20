@@ -138,7 +138,24 @@
             if (box.bomb) {
               alert('bogsa')
             }
+
             this.openNeighbors(box)
+
+            if (this.checkWin()) {
+              alert('u win!')
+            }
+          },
+
+          checkWin: function() {
+            var unopenedBoxes = 0;
+
+            for (var i = 0; i < this.cols; i++) {
+              for (var j = 0; j < this.rows; j++) {
+                unopenedBoxes +=  this.boxes[i][j].opened ? 0 : 1
+              }
+            }
+
+            return unopenedBoxes === this.numBombs
           },
 
           openNeighbors: function (box) {
